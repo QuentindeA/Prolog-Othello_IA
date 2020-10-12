@@ -8,12 +8,12 @@
 %%The board will start with 2 black discs and 2 white discs at the centre of the board.
 %%They are arranged with black forming a North-East to South-West direction.
 %%Black always moves first.
-init:‐length(Board,64),nth0(28,Board,'b'),nth0(35,Board,'b'),nth0(27,Board,'w'),nth0(36,Board,'w'),assert(board(Board)),play('b').
+init :- length(Board,64),nth0(28,Board,'b'),nth0(35,Board,'b'),nth0(27,Board,'w'),nth0(36,Board,'w'),assert(board(Board)),play('b').
 
 
 %Tour de jeu : si pas de gagnant, on fait un tour de jeu pour un joueur.
 play(_) :- gameover(Winner),!,write('Game is over. Winner : '), writeln(Winner), displayBoard.
-play(Player) :- moveAvailable(Player), ! , write('New turn for :'), write(Player),board(Board), displayBoard, ia(Board,Move,Player), playMove(Board,Move,NewBoard,Player),applyIt(Board,NewBoard),changePlayer(Player,NextPlayer),play(NextPlayer).
+play(Player) :- moveAvailable(Player), ! , write('New turn for : '), writeln(Player),board(Board), displayBoard, ia(Board,Move,Player), playMove(Board,Move,NewBoard,Player),applyIt(Board,NewBoard),changePlayer(Player,NextPlayer),play(NextPlayer).
 play(Player) :- write('Player "'), write(Player), writeln('" can not play.'), changePlayer(Player,NextPlayer), play(NextPlayer).
 
 
@@ -42,7 +42,7 @@ findWinner(Board,Winner) :- separate(Board,L1,L2), countDisk(L1,L2,Winner).
 
 
 %TODO
-moveAvailable(_) :- Fail.
+moveAvailable(_) :- 1 = 1.
 
 
 %TODO
@@ -65,4 +65,12 @@ changePlayer('w','b').
 
 %Affiche le plateau de jeu visuellementi
 %%TODO voir le cours 
-displayBoard :- writeln('Affiche tableau.')
+%%X = Ligne
+%%Y = Colonne
+displayBoard :- writeln('----------'),board(Board),displayRow(Board,0),writeln('----------').
+displayRow(_,8).
+displayRow(Board,X) :- displayCol(Board,X,0).
+displayCol(Board,X,8) :- Y is X+1,writeln(''),displayRow(Board,Y).
+displayCol([C|Board],X,Y) :- displayCell(C), Z is Y+1, displayCol(Board,X,Z).
+displayCell(C) :- var(C), write('O').
+displayCell(C) :- write(C).
