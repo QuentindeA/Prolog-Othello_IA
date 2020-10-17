@@ -4,7 +4,7 @@
 
 %Rules : https://www.ultraboardgames.com/othello/game-rules.php
 
-%Creation du plateau de jeu et debut de la partie
+%Creation of the boarding game at the begin of the play
 %%The board will start with 2 black discs and 2 white discs at the centre of the board.
 %%They are arranged with black forming a North-East to South-West direction.
 %%Black always moves first.
@@ -27,7 +27,7 @@ gameover(Winner) :- board(Board), not(moveAvailable(Board, 'b')), not(moveAvaila
 countDisk([],[],'Draw').
 countDisk([],_,'w').
 countDisk(_,[],'b').
-countDisk([X|L1],[Y|L2]],Winner) :- countDisk(L1,L2,Winner).
+countDisk([X|L1],[Y|L2],Winner) :- countDisk(L1,L2,Winner).
 
 %Separe les disques blancs et noirs
 %%L1 de longeur le nombre de disque noir
@@ -41,7 +41,7 @@ separate([_|Board],L1,L2) :- separate(Board,L1,L2). % autre que b ou w
 findWinner(Board,Winner) :- separate(Board,L1,L2), countDisk(L1,L2,Winner). 
 
 
-%TODOi
+%TODO
 %A move is made by placing a disc of the player's color on the board in a position that "out-flanks" one or more of the opponent's discs.
 %A disc or row of discs is outflanked when it is surrounded at the ends by discs of the opposite color.
 %A disc may outflank any number of discs in one or more rows in any direction (horizontal, vertical, diagonal).
@@ -55,7 +55,7 @@ moveAvailable(Board,_) :- moveAvailableDiagR(Board,_).
 moveAvailable(Board,_) :- moveAvailableDiagL(Board,_).
 
 
-%TODO
+%TODO : Create different versions
 ia(Board,Move,Player) :- repeat, Move is random(64), nth0(Move,Board,Elem), var(Elem), !.
 
 
@@ -64,7 +64,7 @@ ia(Board,Move,Player) :- repeat, Move is random(64), nth0(Move,Board,Elem), var(
 playMove(Board, Move, NewBoard, Player) :- Board=NewBoard, nth0(Move,NewBoard,Player).
 
 
-%Eregistre le plateau
+%Enregistre le plateau
 applyIt(Board, NewBoard) :- retract(board(Board)),assert(board(NewBoard)).
 %%TODO voir le cours 
 
