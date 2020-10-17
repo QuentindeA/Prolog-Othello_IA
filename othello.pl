@@ -66,7 +66,7 @@ playMove(Board, Move, NewBoard, Player) :- Board=NewBoard, nth0(Move,NewBoard,Pl
 
 %Enregistre le plateau
 applyIt(Board, NewBoard) :- retract(board(Board)),assert(board(NewBoard)).
-%%TODO voir le cours 
+%%TODO voir le cours
 
 
 %Permet de switch de joueur
@@ -74,7 +74,7 @@ changePlayer('b','w').
 changePlayer('w','b').
 
 
-%Affiche le plateau de jeu visuellementi
+%Affiche le plateau de jeu visuellement
 %%X = Ligne
 %%Y = Colonne
 displayBoard :- writeln('----------'),board(Board),displayRow(Board,0),writeln('----------').
