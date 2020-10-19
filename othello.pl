@@ -51,7 +51,7 @@ moveAvailable(Board,_) :- moveAvailableCol(Board,_).
 moveAvailable(Board,_) :- moveAvailableDiagR(Board,_).
 moveAvailable(Board,_) :- moveAvailableDiagL(Board,_).
 
-%Création d'une liste par ligne et on teste s'il existe un move est possible dans la liste
+%Création d'une liste par ligne et on teste si un move est possible dans la liste
 %TODO Pas complétement correcte...
 moveAvailableRow([],B,_,P) :- moveAvailableArray(B,'start',P).
 moveAvailableRow(B2,B,8,P) :- B2\==[], moveAvailableArray(B,'start',P).
