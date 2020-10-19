@@ -19,7 +19,7 @@ play(Player) :- write('Player "'), write(Player), writeln('" can not play.'), ch
 
 %Fin de partie
 %%When it is no longer possible for either player to move, the game is over.
-gameover(Winner) :- board(Board), not(moveAvailable(Board, P)), findWinner(Board,Winner).
+gameover(Winner) :- board(Board), not(moveAvailable(Board, _)), findWinner(Board,Winner).
 
 
 %Trouver le gagnant, si quelqu'un a une meilleur soluce..
@@ -52,10 +52,9 @@ moveAvailable(Board,_) :- moveAvailableDiagR(Board,_).
 moveAvailable(Board,_) :- moveAvailableDiagL(Board,_).
 
 %Création d'une liste par ligne et on teste si un move est possible dans la liste
-%TODO Pas complétement correcte...
-moveAvailableRow([],B,_,P) :- moveAvailableArray(B,'start',P).
-moveAvailableRow(B2,B,8,P) :- B2\==[], moveAvailableArray(B,'start',P).
-moveAvailableRow(B,_,8,P) :- B\==[], line(B,[],0,P).
+moveAvailableRow([],B,_,P) :- moveAvailableArray(B,P).
+moveAvailableRow(B2,B,8,P) :- B2\==[], moveAvailableArray(B,P).
+moveAvailableRow(B,_,8,P) :- B\==[], moveAvailableRow(B,[],0,P).
 moveAvailableRow([E|B],B2,Pos,P) :- Pos \== 8, NewPos is Pos+1, moveAvailableRow(B,[E|B2],NewPos,P).
 
 %TODO
@@ -67,16 +66,22 @@ moveAvailableDiagR(_,_) :- 1=2.
 moveAvailableDiagL(_,_) :- 1=2.
 
 
-%On cherche si on trouve une place valide dans une liste
-moveAvailableArray([D|B],'start',P) :- var(D), moveAvailableArray1(B,_,P). % on a une place au début
-moveAvailableArray([D|B],'start',P) :- nonvar(D), moveAvailableArray2(B,D,P). % on a pas de place au début
+%On cherche si on trouve une place valide dans une liste cad deux couleurs différentes côte à côte
+moveAvailableArray(B,P) :- moveAvailableArrayClearDisk(B,P). %On test dans un sens
+moveAvailableArray(B,P) :- inv(B, B2), moveAvailableArrayClearDisk(B2,P). %On test dans l'autre
+
+moveAvailableArrayClearDisk([D|B], P) :- nonvar(D), moveAvailableArrayClearDisk(B,P). %On dépile tant que case pleine
+moveAvailableArrayClearDisk([D|B], P) :- var(D), moveAvailableArray1(B,_,P). %Après la case vide, on recherche un changement de couleur
 
 moveAvailableArray1([D|B],_,P) :- var(D), moveAvailableArray1(B,_,P). %tant que l on a des places libres, on les retire
 moveAvailableArray1([D|B],PrevD,P) :- nonvar(D), var(PrevD), moveAvailableArray1(B,D,P). %On trouve le premier élément
 moveAvailableArray1([D|B],PrevD,P) :- nonvar(D), nonvar(PrevD), D==PrevD, moveAvailableArray1(B,D,P). %Il existe un précédent mais meme couleur
 moveAvailableArray1([D|_],PrevD,D) :- nonvar(D), nonvar(PrevD), D\==PrevD. %Il existe un précédent et il est de couleur différente. Il existe un move
-%TODO
-moveAvailableArray2(_,_,_) :- 1=2.
+
+%Inversion d'une liste
+inv(L,R) :- inv(L,[],R).
+inv([],A,A).
+inv([T|Q],A,R) :- inv(Q,[T|A],R).
 
 
 
@@ -91,8 +96,6 @@ playMove(Board, Move, NewBoard, Player) :- Board=NewBoard, nth0(Move,NewBoard,Pl
 
 %Enregistre le plateau
 applyIt(Board, NewBoard) :- retract(board(Board)),assert(board(NewBoard)).
-%%TODO voir le cours
-
 
 %Permet de switch de joueur
 changePlayer('b','w').
