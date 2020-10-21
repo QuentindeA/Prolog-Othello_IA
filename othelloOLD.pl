@@ -89,52 +89,6 @@ inv([T|Q],A,R) :- inv(Q,[T|A],R).
 %TODO : Create different versions
 ia(Board,Move,Player) :- repeat, Move is random(64), nth0(Move,Board,Elem), var(Elem), !.
 
-%Heuristics
-% P1 is the current player while P2 is the ennemy
-% Corners Captured
-%P1 is the current player
-heuristic_cornersCaptured(Board, P1, P2, H) :-
-    %Récupérer tous les disques
-    getCorners(Board, Corners),
-    %Compter le nombre de disques occupés par joueur
-    countByPlayer(Corners, P1, NbDiskP1),
-    countByPlayer(Corners, P2, NbDiskP2),
-    %Somme des disques sur les coins
-    Somme is NbDiskP1 + NbDiskP2,
-    %Calculer l'heuristique
-    heuristic_compute(NbDiskP1, NbDiskP2, Somme, H).
-
-getCorners(Board, Corners) :- getCorners(Board, Corners, 0).
-getCorners([],[],64).
-getCorners([D|B], [D|C], I) :- (I==0 ; I==7 ; I==56; I==63) , J is I+1, getCorners(B, C, J).
-getCorners([D|B], C, I) :-  J is I+1, getCorners(B, C, J).
-
-countByPlayer([], P, 0).
-countByPlayer([D|C], P, NbDiskP) :- var(D), countByPlayer(C, P, NbDiskP).
-countByPlayer([P|C], P, NbDiskP) :- countByPlayer(C, P, NewNbDiskP), NbDiskP is NewNbDiskP + 1.
-countByPlayer([D|C], P, NbDiskP) :- countByPlayer(C, P, NbDiskP).
-
-heuristic_compute(_,_,0,0).
-heuristic_compute(NbDiskP1, NbDiskP2, Somme, H) :- H is 100 * (NbDiskP1-NbDiskP2) / Somme.
-
-% Stability
-% TODO : compléter les stables/instables, possibilité d'utiliser le statique
-heuristic_stability(Board, P1, P2, H) :-
-    %Compter les stables de P1 (impossible à retourner dans la partie)
-    countStable(Board, P1, NbDiskStableP1),
-    %Compter les stables de P2
-    countStable(Board, P2, NbDiskStableP2),
-    %Compter les instables de P1 (retournable au tour suivant)
-    countUnstable(Board, P1, NbDiskUnstableP1),
-    %Compter les instables de P2
-    countUnstable(Board, P2, NbDiskUnstableP2),
-    %Calculer les stabilités
-    StabilityP1 is NbDiskStableP1 - NbDiskUnstableP1,
-    StabilityP2 is NbDiskStableP2 - NbDiskUnstableP2,
-    Somme is StabilityP1 + StabilityP2,
-    %Calculer l'heuristique
-    heuristic_stability_compute(StabilityP1, StabilityP2, Somme, H).
-
 %Ajoute le disque sur le plateau
 %TODO retourne les disques encercles
 playMove(Board, Move, NewBoard, Player) :- Board=NewBoard, nth0(Move,NewBoard,Player).
